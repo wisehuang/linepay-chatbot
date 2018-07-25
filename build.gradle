@@ -7,7 +7,7 @@ plugins {
 group 'line.pay.chatbot'
 version '0.1'
 
-sourceCompatibility = 10
+sourceCompatibility = 1.10
 
 repositories {
     mavenCentral()
