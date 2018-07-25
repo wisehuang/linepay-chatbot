@@ -17,22 +17,16 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 public class CallbackController implements ServletContextAware {
 
-    private DialogFlowService dialogFlowService;
-    private LineMessageService lineMessageService;
-
     @Autowired
-    public CallbackController(DialogFlowService dialogFlowService, LineMessageService lineMessageService) {
-        this.dialogFlowService = dialogFlowService;
-        this.lineMessageService = lineMessageService;
-    }
+    private DialogFlowService dialogFlowService;
+    @Autowired
+    private LineMessageService lineMessageService;
 
     @RequestMapping(value="/callback", method=RequestMethod.POST)
     public ResponseEntity lineCallback(HttpServletRequest request, HttpServletResponse response) {
-
         return new ResponseEntity(HttpStatus.OK);
     }
-
-
+    
     @Override
     public void setServletContext(ServletContext servletContext) {
 
