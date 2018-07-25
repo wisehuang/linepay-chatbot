@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+        </Console>
+        <RollingFile name="RollingLogFile" fileName="line_pay_chatbot.log" filePattern="line_pay_chatbot-%d{yyy-MM-dd}.%i.log" append="true">
+            <PatternLayout pattern="%d{yyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36} - %msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+        <!--<File name="ExtractTrxDataFile" fileName="extract_trx_data.log" immediateFlush="false" append="true">-->
+        <!--<PatternLayout pattern="%d{yyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36} - %msg%n"/>-->
+        <!--</File>-->
+    </Appenders>
+    <Loggers>
+        <!--<Logger name="com.line.pay.extracttrxdatashell" level="info" additivity="false">
+            <appender-ref ref="RollingLogFile" level="info" />
+        </Logger>-->
+        <Root level="info">
+            <AppenderRef ref="RollingLogFile" level="info" />
+            <AppenderRef ref="Console" level="debug" />
+        </Root>
+    </Loggers>
+</Configuration>
