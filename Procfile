@@ -1,0 +1,1 @@
+web: java $JAVA_OPTS -jar build/libs/line-pay-chatbot-0.1.jar
