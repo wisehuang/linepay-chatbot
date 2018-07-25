@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -jar build/libs/line-pay-chatbot-0.1.jar
+web: build/distributions/line-pay-chatbot-0.1/bin/line-pay-chatbot
