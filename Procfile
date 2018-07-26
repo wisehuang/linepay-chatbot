@@ -1,1 +1,0 @@
-web: java $JAVA_OPTS -jar build/libs/line-pay-chatbot-*.jar --server.port=$PORT
