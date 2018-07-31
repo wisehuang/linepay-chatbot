@@ -1,5 +1,7 @@
 package com.line.pay.chatbot.service;
 
+import com.google.gson.Gson;
+import com.line.pay.chatbot.events.WebhookEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +28,26 @@ public class LineMessageService {
 
     public String getChannelSecret() {
         return this.channelSecret;
+    }
+
+    public void handleWebhookEvent(String bodyStr) {
+        var gson = new Gson();
+        var webhookEvent = gson.fromJson(bodyStr, WebhookEvent.class);
+
+        logger.info("body:" + bodyStr);
+
+        for (var event : webhookEvent.getEvents()) {
+            logger.info("event type:" + event.getType());
+
+            if("message".equals(event.getType())) {
+                logger.info("event content:" + event.getMessage().getText());
+                logger.info("reply token:" + event.getReplyToken());
+            }
+        }
+    }
+
+    public void replyMessage(String msg) {
+
     }
 
     public boolean isSignatureValid(String signature, byte[] body) {
