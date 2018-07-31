@@ -34,7 +34,7 @@ public class CallbackController implements ServletContextAware {
             var signature = request.getHeader(X_LINE_SIGNATURE);
             var body = ByteStreams.toByteArray(request.getInputStream());
 
-            logger.info("body:" + body);
+            logger.info("body:" + new String(body));
 
 //            if (!isSignatureValid(signature, body)) {
 //                return new ResponseEntity(HttpStatus.BAD_REQUEST);
