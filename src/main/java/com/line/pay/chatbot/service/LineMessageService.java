@@ -14,4 +14,8 @@ public class LineMessageService {
 
     @Value("${line.channel.secret}")
     private String channelSecret;
+
+    public String getChannelSecret() {
+        return this.channelSecret;
+    }
 }

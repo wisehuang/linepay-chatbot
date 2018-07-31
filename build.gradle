@@ -22,7 +22,7 @@ apply plugin: 'io.spring.dependency-management'
 group 'line.pay.chatbot'
 version '0.1'
 
-sourceCompatibility = 1.8
+sourceCompatibility = 10
 
 repositories {
     mavenCentral()
