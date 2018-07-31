@@ -2,8 +2,6 @@ package com.line.pay.chatbot.controller;
 
 import com.line.pay.chatbot.service.DialogFlowService;
 import com.line.pay.chatbot.service.LineMessageService;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Hex;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +18,16 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Base64;
 import java.util.stream.Collectors;
 
 @Controller
 public class CallbackController implements ServletContextAware {
     private static Logger logger = LogManager.getLogger(CallbackController.class.getName());
 
-    private final String X_LINE_SIGNATURE = "X-Line-Signature";
+    private static final String X_LINE_SIGNATURE = "X-Line-Signature";
+    private static final String HASH_ALGORITHM = "HmacSHA256";
 
     @Autowired
     private DialogFlowService dialogFlowService;
@@ -53,17 +54,17 @@ public class CallbackController implements ServletContextAware {
         var result = false;
 
         try {
-            var sha256HMAC = Mac.getInstance("HmacSHA256");
+            var sha256HMAC = Mac.getInstance(HASH_ALGORITHM);
             SecretKeySpec secretKey = new SecretKeySpec(lineMessageService.getChannelSecret().getBytes(StandardCharsets.UTF_8), "HmacSHA256");
             sha256HMAC.init(secretKey);
 
-            var bodyBase64 = Base64.encodeBase64(body.getBytes(StandardCharsets.UTF_8));
-            var encryptedBody = Base64.encodeBase64String(sha256HMAC.doFinal(bodyBase64));
+            final byte[] headerSignature = Base64.getDecoder().decode(signature);
+            final byte[] bodySignature = sha256HMAC.doFinal(body.getBytes());
 
-            logger.info("signature = " + signature);
-            logger.info("EncryptedBody = " + encryptedBody);
+            logger.info("headerSignature = " + headerSignature);
+            logger.info("bodySignature = " + bodySignature);
 
-            if(signature.equals(encryptedBody)) {
+            if(MessageDigest.isEqual(headerSignature, bodySignature)) {
                 result = true;
             } else {
                 result = false;
