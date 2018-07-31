@@ -1,5 +1,6 @@
 package com.line.pay.chatbot.controller;
 
+import com.google.common.io.ByteStreams;
 import com.line.pay.chatbot.service.DialogFlowService;
 import com.line.pay.chatbot.service.LineMessageService;
 import org.apache.logging.log4j.LogManager;
@@ -38,7 +39,7 @@ public class CallbackController implements ServletContextAware {
     public ResponseEntity handleCallback(HttpServletRequest request, HttpServletResponse response) {
         try {
             var signature = request.getHeader(X_LINE_SIGNATURE);
-            var body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+            var body = ByteStreams.toByteArray(request.getInputStream());
 
             if (!isSignatureValid(signature, body)) {
                 return new ResponseEntity(HttpStatus.BAD_REQUEST);
@@ -50,7 +51,7 @@ public class CallbackController implements ServletContextAware {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    private boolean isSignatureValid(String signature, String body) {
+    private boolean isSignatureValid(String signature, byte[] body) {
         var result = false;
 
         try {
@@ -59,7 +60,7 @@ public class CallbackController implements ServletContextAware {
             sha256HMAC.init(secretKey);
 
             final byte[] headerSignature = Base64.getDecoder().decode(signature);
-            final byte[] bodySignature = sha256HMAC.doFinal(body.getBytes());
+            final byte[] bodySignature = sha256HMAC.doFinal(body);
 
             logger.info("headerSignature = " + headerSignature);
             logger.info("bodySignature = " + bodySignature);
