@@ -1,6 +1,8 @@
 package com.line.pay.chatbot.controller;
 
 import com.google.common.io.ByteStreams;
+import com.google.gson.Gson;
+import com.line.pay.chatbot.events.TextEvent;
 import com.line.pay.chatbot.service.DialogFlowService;
 import com.line.pay.chatbot.service.LineMessageService;
 import org.apache.logging.log4j.LogManager;
@@ -33,8 +35,16 @@ public class CallbackController implements ServletContextAware {
         try {
             var signature = request.getHeader(X_LINE_SIGNATURE);
             var body = ByteStreams.toByteArray(request.getInputStream());
+            var reader = request.getReader();
+
+            Gson gson = new Gson();
+            var textEvent = gson.fromJson(reader, TextEvent.class);
 
             logger.info("body:" + new String(body));
+
+            for (var event : textEvent.getEvents()) {
+                logger.info("event type:" + event.getType());
+            }
 
 //            if (!isSignatureValid(signature, body)) {
 //                return new ResponseEntity(HttpStatus.BAD_REQUEST);
