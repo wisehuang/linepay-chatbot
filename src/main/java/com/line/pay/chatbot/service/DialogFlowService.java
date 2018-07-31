@@ -7,4 +7,5 @@ import org.springframework.stereotype.Service;
 @Service
 public class DialogFlowService {
     private static Logger logger=LogManager.getLogger(LineMessageService.class.getName());
+
 }

@@ -23,7 +23,7 @@ public class CallbackController implements ServletContextAware {
     private LineMessageService lineMessageService;
 
     @RequestMapping(value="/callback", method=RequestMethod.POST)
-    public ResponseEntity lineCallback(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity handleCallback(HttpServletRequest request, HttpServletResponse response) {
         return new ResponseEntity(HttpStatus.OK);
     }
     
