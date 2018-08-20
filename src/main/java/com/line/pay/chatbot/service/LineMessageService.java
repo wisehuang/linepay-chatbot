@@ -97,7 +97,7 @@ public class LineMessageService {
             var actions = new ArrayList<Action>();
             actions.add(action);
 
-            action.setType("postback");
+            action.setType("uri");
             action.setLabel("LINE Pay");
             action.setUri(appUrl);
 
