@@ -55,13 +55,15 @@ public class LinePayService {
 
         var client = new OkHttpClient();
 
-        var confirmRequest = new ConfirmRequest();
+//        var confirmRequest = new ConfirmRequest();
+//
+//        confirmRequest.setAmount(10);
+//        confirmRequest.setCurrency("TWD");
+//
+//        var gson = new Gson();
+//        var json = gson.toJson(confirmRequest);
 
-        confirmRequest.setAmount(10);
-        confirmRequest.setCurrency("TWD");
-
-        var gson = new Gson();
-        var json = gson.toJson(confirmRequest);
+        var json = "{}";
 
         logger.info("confirm request:" + json);
 
