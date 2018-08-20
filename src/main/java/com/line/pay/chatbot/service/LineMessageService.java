@@ -105,6 +105,8 @@ public class LineMessageService {
             action.setUri(appUrl);
             action.setType("Uri");
 
+            msg.setAction(action);
+
             List<ButtonMessage> msgs = new ArrayList<>();
 
             msgs.add(msg);
