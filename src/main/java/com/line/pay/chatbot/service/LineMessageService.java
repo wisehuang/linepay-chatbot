@@ -5,6 +5,7 @@ import com.line.pay.chatbot.events.Event;
 import com.line.pay.chatbot.events.Message;
 import com.line.pay.chatbot.events.ReplyMessage;
 import com.line.pay.chatbot.events.WebhookEvent;
+import com.line.pay.chatbot.payment.ReserveResponse;
 import okhttp3.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,6 +51,9 @@ public class LineMessageService {
         return this.channelSecret;
     }
 
+    @Autowired
+    private LinePayService linePayService;
+
     public void handleWebhookEvent(String bodyStr) {
         var gson = new Gson();
 
@@ -77,14 +81,24 @@ public class LineMessageService {
             logger.info("event content:" + msgString);
             logger.info("reply token:" + replyToken);
 
+            var reserveResponse = new ReserveResponse();
+
+            if ("pay".equals(msgString.split(" "))) {
+                long amount = Long.valueOf(msgString.split(" ")[1]);
+
+                reserveResponse = linePayService.invokeReserve(amount);
+            }
+
             var url = apiUrl + replyUrl;
             var client = new OkHttpClient();
 
             var replyMsg = new ReplyMessage();
             var msg = new Message();
             replyMsg.setReplyToken(replyToken);
+
+            var appUrl = reserveResponse.getInfo().getPaymentUrl().getApp();
             msg.setText("hello back");
-            msg.setType("text");
+            msg.setType(appUrl);
 
             List<Message> msgs = new ArrayList<>();
 
@@ -108,6 +122,8 @@ public class LineMessageService {
 
             Response response = client.newCall(request).execute();
             logger.info("Response HTTP Status:" + response.code());
+
+            response.close();
 
 //                    var textList = new ArrayList<String>();
 //                    textList.add(event.getMessage().getText());
