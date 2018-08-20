@@ -52,16 +52,16 @@ public class LineMessageService {
         var url = apiUrl + replyUrl;
         var client = new OkHttpClient();
 
-        RequestBody body = RequestBody.create(JSON, json);
+        var body = RequestBody.create(JSON, json);
         var token = "Bearer " + accessToken;
 
-        Request request = new Request.Builder()
+        var request = new Request.Builder()
                 .addHeader("Authorization", token)
                 .url(url)
                 .post(body)
                 .build();
 
-        Response response = client.newCall(request).execute();
+        var response = client.newCall(request).execute();
         logger.info("Response HTTP Status:" + response.code());
         logger.info("Response body:" + response.body().string());
 
@@ -111,11 +111,11 @@ public class LineMessageService {
 
         try {
             var sha256HMAC = Mac.getInstance(HASH_ALGORITHM);
-            SecretKeySpec secretKey = new SecretKeySpec(this.getChannelSecret().getBytes(StandardCharsets.UTF_8), HASH_ALGORITHM);
+            var secretKey = new SecretKeySpec(this.getChannelSecret().getBytes(StandardCharsets.UTF_8), HASH_ALGORITHM);
             sha256HMAC.init(secretKey);
 
-            final byte[] headerSignature = Base64.getDecoder().decode(signature);
-            final byte[] bodySignature = sha256HMAC.doFinal(body);
+            final var headerSignature = Base64.getDecoder().decode(signature);
+            final var bodySignature = sha256HMAC.doFinal(body);
 
             logger.info("headerSignature = " + headerSignature);
             logger.info("bodySignature = " + bodySignature);

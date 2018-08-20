@@ -44,7 +44,7 @@ public class CallbackController implements ServletContextAware {
                 return new ResponseEntity(HttpStatus.BAD_REQUEST);
             }
 
-            String bodyStr = new String(body);
+            var bodyStr = new String(body);
 
             logger.info("body:" + bodyStr);
 
@@ -75,7 +75,7 @@ public class CallbackController implements ServletContextAware {
         var reserveResponse = new ReserveResponse();
 
         if ("pay".equals(msgString.split(" ")[0])) {
-            long amount = Long.valueOf(msgString.split(" ")[1]);
+            var amount = Long.valueOf(msgString.split(" ")[1]);
 
             reserveResponse = linePayService.invokeReserve(amount);
         }
@@ -83,9 +83,9 @@ public class CallbackController implements ServletContextAware {
         var appUrl = reserveResponse.getInfo().getPaymentUrl().getApp();
 
 
-        TemplateMessage templateMessage = lineMessageService.getTemplateMessage(replyToken, appUrl);
+        var templateMessage = lineMessageService.getTemplateMessage(replyToken, appUrl);
 
-        Gson gson = new Gson();
+        var gson = new Gson();
         var json = gson.toJson(templateMessage);
 
         logger.info("Reply TemplateMessage:" + json);
