@@ -30,6 +30,9 @@ public class LineMessageService {
     @Autowired
     private DialogFlowService dialogFlowService;
 
+    @Autowired
+    private LinePayService linePayService;
+
     @Value("${line.channel.id}")
     private String channelId;
 
@@ -50,9 +53,6 @@ public class LineMessageService {
     public String getChannelSecret() {
         return this.channelSecret;
     }
-
-    @Autowired
-    private LinePayService linePayService;
 
     public void handleWebhookEvent(String bodyStr) {
         var gson = new Gson();
@@ -83,7 +83,7 @@ public class LineMessageService {
 
             var reserveResponse = new ReserveResponse();
 
-            if ("pay".equals(msgString.split(" "))) {
+            if ("pay".equals(msgString.split(" ")[0])) {
                 long amount = Long.valueOf(msgString.split(" ")[1]);
 
                 reserveResponse = linePayService.invokeReserve(amount);
