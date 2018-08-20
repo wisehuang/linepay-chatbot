@@ -46,9 +46,9 @@ public class LinePayService {
         return reserveResponse;
     }
 
-    public void invokeConfirm(String orderId) throws Exception{
+    public void invokeConfirm(long transactionId) throws Exception{
 
-        var url = payApiUrl + "/" + orderId + "/confirm";
+        var url = payApiUrl + "/" + transactionId + "/confirm";
 
         logger.info("confirm API:" + url);
 
@@ -61,7 +61,7 @@ public class LinePayService {
 
         Gson gson = new Gson();
         var json = gson.toJson(confirmRequest);
-        
+
         RequestBody body = RequestBody.create(JSON, json);
 
         Request request = new Request.Builder()

@@ -53,10 +53,10 @@ public class CallbackController implements ServletContextAware {
     }
 
     @RequestMapping(value="/confirm", method=RequestMethod.GET)
-    public ResponseEntity handleConfirm(HttpServletRequest request, HttpServletResponse response, @RequestParam("orderId") String orderId) {
+    public ResponseEntity handleConfirm(HttpServletRequest request, HttpServletResponse response, @RequestParam("orderId") String orderId, @RequestParam("transactionId") long transactionId) {
 
         try {
-            linePayService.invokeConfirm(orderId);
+            linePayService.invokeConfirm(transactionId);
 
             return new ResponseEntity("DONE", HttpStatus.OK);
         } catch (Exception e) {
