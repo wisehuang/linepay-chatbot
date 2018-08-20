@@ -1,7 +1,10 @@
 package com.line.pay.chatbot.controller;
 
 import com.google.common.io.ByteStreams;
-import com.line.pay.chatbot.service.DialogFlowService;
+import com.google.gson.Gson;
+import com.line.pay.chatbot.events.Event;
+import com.line.pay.chatbot.events.TemplateMessage;
+import com.line.pay.chatbot.payment.ReserveResponse;
 import com.line.pay.chatbot.service.LineMessageService;
 import com.line.pay.chatbot.service.LinePayService;
 import org.apache.logging.log4j.LogManager;
@@ -37,12 +40,22 @@ public class CallbackController implements ServletContextAware {
             var signature = request.getHeader(X_LINE_SIGNATURE);
             var body = ByteStreams.toByteArray(request.getInputStream());
 
-            String bodyStr = new String(body);
-
-            lineMessageService.handleWebhookEvent(bodyStr);
-
             if (!lineMessageService.isSignatureValid(signature, body)) {
                 return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            }
+
+            String bodyStr = new String(body);
+
+            logger.info("body:" + bodyStr);
+
+            var webhookEvent = lineMessageService.handleWebhookEvent(bodyStr);
+
+            for (var event : webhookEvent.getEvents()) {
+                logger.info("event type:" + event.getType());
+
+                if ("message".equals(event.getType())) {
+                    replyTemplateMessage(event);
+                }
             }
 
         } catch (Exception e) {
@@ -50,6 +63,34 @@ public class CallbackController implements ServletContextAware {
         }
 
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    private void replyTemplateMessage(Event event) throws Exception {
+        var msgString = event.getMessage().getText();
+        var replyToken = event.getReplyToken();
+
+        logger.info("event content:" + msgString);
+        logger.info("reply token:" + replyToken);
+
+        var reserveResponse = new ReserveResponse();
+
+        if ("pay".equals(msgString.split(" ")[0])) {
+            long amount = Long.valueOf(msgString.split(" ")[1]);
+
+            reserveResponse = linePayService.invokeReserve(amount);
+        }
+
+        var appUrl = reserveResponse.getInfo().getPaymentUrl().getApp();
+
+
+        TemplateMessage templateMessage = lineMessageService.getTemplateMessage(replyToken, appUrl);
+
+        Gson gson = new Gson();
+        var json = gson.toJson(templateMessage);
+
+        logger.info("Reply TemplateMessage:" + json);
+
+        lineMessageService.replyMessage(json);
     }
 
     @RequestMapping(value="/confirm", method=RequestMethod.GET)

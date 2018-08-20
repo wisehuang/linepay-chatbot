@@ -2,11 +2,9 @@ package com.line.pay.chatbot.service;
 
 import com.google.gson.Gson;
 import com.line.pay.chatbot.events.*;
-import com.line.pay.chatbot.payment.ReserveResponse;
 import okhttp3.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -16,19 +14,12 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.List;
 
 @Service
 public class LineMessageService {
     private static Logger logger=LogManager.getLogger(LineMessageService.class.getName());
 
     private static final String HASH_ALGORITHM = "HmacSHA256";
-
-    @Autowired
-    private DialogFlowService dialogFlowService;
-
-    @Autowired
-    private LinePayService linePayService;
 
     @Value("${line.channel.id}")
     private String channelId;
@@ -51,99 +42,68 @@ public class LineMessageService {
         return this.channelSecret;
     }
 
-    public void handleWebhookEvent(String bodyStr) {
+    public WebhookEvent handleWebhookEvent(String bodyStr) throws Exception {
         var gson = new Gson();
-
-        try {
-            var webhookEvent = gson.fromJson(bodyStr, WebhookEvent.class);
-
-            logger.info("body:" + bodyStr);
-
-            for (var event : webhookEvent.getEvents()) {
-                logger.info("event type:" + event.getType());
-
-                replyMessage(event);
-            }
-        } catch (Exception e) {
-            logger.error(e);
-        }
+        return gson.fromJson(bodyStr, WebhookEvent.class);
     }
 
-    public void replyMessage(Event event) throws Exception{
-        if ("message".equals(event.getType())) {
+    public void replyMessage(String json) throws Exception {
 
-            var msgString = event.getMessage().getText();
-            var replyToken = event.getReplyToken();
+        var url = apiUrl + replyUrl;
+        var client = new OkHttpClient();
 
-            logger.info("event content:" + msgString);
-            logger.info("reply token:" + replyToken);
+        RequestBody body = RequestBody.create(JSON, json);
+        var token = "Bearer " + accessToken;
 
-            var reserveResponse = new ReserveResponse();
+        Request request = new Request.Builder()
+                .addHeader("Authorization", token)
+                .url(url)
+                .post(body)
+                .build();
 
-            if ("pay".equals(msgString.split(" ")[0])) {
-                long amount = Long.valueOf(msgString.split(" ")[1]);
+        Response response = client.newCall(request).execute();
+        logger.info("Response HTTP Status:" + response.code());
+        logger.info("Response body:" + response.body().string());
 
-                reserveResponse = linePayService.invokeReserve(amount);
-            }
-
-            var appUrl = reserveResponse.getInfo().getPaymentUrl().getApp();
-            var url = apiUrl + replyUrl;
-            var client = new OkHttpClient();
-
-            var templateMessage = new TemplateMessage();
-
-            var action = new Action();
-
-            var actions = new ArrayList<Action>();
-            actions.add(action);
-
-            action.setType("uri");
-            action.setLabel("LINE Pay");
-            action.setUri(appUrl);
-
-            var template = new Template();
-
-            template.setType("buttons");
-            template.setText("Tap button to pay");
-            template.setActions(actions);
-
-            var message = new Message();
-
-            message.setType("template");
-            message.setAltText("Paid by LINE Pay");
-            message.setTemplate(template);
-
-            var messages = new ArrayList<Message>();
-            messages.add(message);
-
-            templateMessage.setReplyToken(replyToken);
-            templateMessage.setMessages(messages);
-
-            Gson gson = new Gson();
-            var json = gson.toJson(templateMessage);
-
-            logger.info("Reply ButtonMessage:" + json);
-
-            RequestBody body = RequestBody.create(JSON, json);
-            var token = "Bearer " + accessToken;
-
-            Request request = new Request.Builder()
-                    .addHeader("Authorization", token)
-                    .url(url)
-                    .post(body)
-                    .build();
-
-            Response response = client.newCall(request).execute();
-            logger.info("Response HTTP Status:" + response.code());
-            logger.info("Response body:" + response.body().string());
-
-            response.close();
+        response.close();
 
 //                    var textList = new ArrayList<String>();
 //                    textList.add(event.getMessage().getText());
 
-            //dialogFlowService.detectIntentTexts("linepaydev", textList, event.getReplyToken(), "en-US");
-        }
+        //dialogFlowService.detectIntentTexts("linepaydev", textList, event.getReplyToken(), "en-US");
+
+    }
+
+    public TemplateMessage getTemplateMessage(String replyToken, String appUrl) {
+        var templateMessage = new TemplateMessage();
+
+        var action = new Action();
+
+        var actions = new ArrayList<Action>();
+        actions.add(action);
+
+        action.setType("uri");
+        action.setLabel("LINE Pay");
+        action.setUri(appUrl);
+
+        var template = new Template();
+
+        template.setType("buttons");
+        template.setText("Tap button to pay");
+        template.setActions(actions);
+
+        var message = new Message();
+
+        message.setType("template");
+        message.setAltText("Paid by LINE Pay");
+        message.setTemplate(template);
+
+        var messages = new ArrayList<Message>();
+        messages.add(message);
+
+        templateMessage.setReplyToken(replyToken);
+        templateMessage.setMessages(messages);
+        return templateMessage;
     }
 
     public boolean isSignatureValid(String signature, byte[] body) {
