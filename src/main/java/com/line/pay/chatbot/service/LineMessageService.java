@@ -99,12 +99,11 @@ public class LineMessageService {
                     .post(body)
                     .build();
 
-            client.newCall(request).execute();
+            Response response = client.newCall(request).execute();
+            logger.info("Response HTTP Status:" + response.code());
 
 //                    var textList = new ArrayList<String>();
 //                    textList.add(event.getMessage().getText());
-
-            logger.info("event type:" + event.getType());
 
             //dialogFlowService.detectIntentTexts("linepaydev", textList, event.getReplyToken(), "en-US");
         }
