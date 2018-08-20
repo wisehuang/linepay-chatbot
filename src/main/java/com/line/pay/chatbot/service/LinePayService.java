@@ -62,14 +62,12 @@ public class LinePayService {
         Gson gson = new Gson();
         var json = gson.toJson(confirmRequest);
 
+        logger.info("confirm request:" + json);
+
         RequestBody body = RequestBody.create(JSON, json);
 
-        Request request = new Request.Builder()
-                .url(url)
-                .post(body)
-                .build();
+        Request request = buildLinePayRequest(body, url);
         client.newCall(request).execute();
-
     }
 
     public ReserveRequest getReserveRequest(long amount) {
