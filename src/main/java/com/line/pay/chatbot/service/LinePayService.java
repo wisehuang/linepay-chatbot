@@ -47,7 +47,7 @@ public class LinePayService {
         return reserveResponse;
     }
 
-    public void invokeConfirm(long transactionId) throws Exception{
+    public void invokeConfirm(long transactionId, int amount) throws Exception{
 
         var url = payApiUrl + "/v2/payments/" + transactionId + "/confirm";
 
@@ -55,15 +55,13 @@ public class LinePayService {
 
         var client = new OkHttpClient();
 
-//        var confirmRequest = new ConfirmRequest();
-//
-//        confirmRequest.setAmount(10);
-//        confirmRequest.setCurrency("TWD");
-//
-//        var gson = new Gson();
-//        var json = gson.toJson(confirmRequest);
+        var confirmRequest = new ConfirmRequest();
 
-        var json = "{}";
+        confirmRequest.setAmount(amount);
+        confirmRequest.setCurrency("TWD");
+
+        var gson = new Gson();
+        var json = gson.toJson(confirmRequest);
 
         logger.info("confirm request:" + json);
 
@@ -91,7 +89,7 @@ public class LinePayService {
         reserveRequest.setAmount(amount);
         reserveRequest.setCapture("true");
         reserveRequest.setCheckConfirmUrlBrowser("false");
-        reserveRequest.setConfirmUrl(confirmUrl + orderId);
+        reserveRequest.setConfirmUrl(confirmUrl + "?amount=" + amount);
         reserveRequest.setConfirmUrlType("CLIENT");
         reserveRequest.setCurrency("TWD");
         reserveRequest.setOrderId(orderId);
