@@ -1,10 +1,7 @@
 package com.line.pay.chatbot.service;
 
 import com.google.gson.Gson;
-import com.line.pay.chatbot.events.Event;
-import com.line.pay.chatbot.events.Message;
-import com.line.pay.chatbot.events.ReplyMessage;
-import com.line.pay.chatbot.events.WebhookEvent;
+import com.line.pay.chatbot.events.*;
 import com.line.pay.chatbot.payment.ReserveResponse;
 import okhttp3.*;
 import org.apache.logging.log4j.LogManager;
@@ -92,24 +89,32 @@ public class LineMessageService {
             var url = apiUrl + replyUrl;
             var client = new OkHttpClient();
 
-            var replyMsg = new ReplyMessage();
-            var msg = new Message();
-            replyMsg.setReplyToken(replyToken);
+            var replyButtonMessage = new ReplyButtonMessage();
+            var msg = new ButtonMessage();
+            replyButtonMessage.setReplyToken(replyToken);
 
             var appUrl = reserveResponse.getInfo().getPaymentUrl().getApp();
-            msg.setText(appUrl);
-            msg.setType("text");
 
-            List<Message> msgs = new ArrayList<>();
+            msg.setType("button");
+            msg.setStyle("primary");
+            msg.setColor("#0000ff");
+
+            var action = new Action();
+
+            action.setLabel("Pay");
+            action.setUri(appUrl);
+            action.setType("Uri");
+
+            List<ButtonMessage> msgs = new ArrayList<>();
 
             msgs.add(msg);
 
-            replyMsg.setMessage(msgs);
+            replyButtonMessage.setButtonMessages(msgs);
 
             Gson gson = new Gson();
-            var json = gson.toJson(replyMsg);
+            var json = gson.toJson(replyButtonMessage);
 
-            logger.info("Reply Message:" + json);
+            logger.info("Reply ButtonMessage:" + json);
 
             RequestBody body = RequestBody.create(JSON, json);
             var token = "Bearer " + accessToken;

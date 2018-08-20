@@ -20,7 +20,7 @@ public class Event {
     private long timestamp;
     @SerializedName("message")
     @Expose
-    private Message message;
+    private EventMessage message;
 
     public String getType() {
         return type;
@@ -54,11 +54,11 @@ public class Event {
         this.timestamp = timestamp;
     }
 
-    public Message getMessage() {
+    public EventMessage getMessage() {
         return message;
     }
 
-    public void setMessage(Message message) {
+    public void setMessage(EventMessage message) {
         this.message = message;
     }
 

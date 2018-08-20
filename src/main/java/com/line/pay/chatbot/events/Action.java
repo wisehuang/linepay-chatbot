@@ -1,20 +1,19 @@
-
 package com.line.pay.chatbot.events;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Message {
+public class Action {
 
     @SerializedName("type")
     @Expose
     private String type;
-    @SerializedName("id")
+    @SerializedName("label")
     @Expose
-    private String id;
-    @SerializedName("text")
+    private String label;
+    @SerializedName("uri")
     @Expose
-    private String text;
+    private String uri;
 
     public String getType() {
         return type;
@@ -24,20 +23,20 @@ public class Message {
         this.type = type;
     }
 
-    public String getId() {
-        return id;
+    public String getLabel() {
+        return label;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
-    public String getText() {
-        return text;
+    public String getUri() {
+        return uri;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
 }
