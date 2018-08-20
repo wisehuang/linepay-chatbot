@@ -86,35 +86,37 @@ public class LineMessageService {
                 reserveResponse = linePayService.invokeReserve(amount);
             }
 
+            var appUrl = reserveResponse.getInfo().getPaymentUrl().getApp();
             var url = apiUrl + replyUrl;
             var client = new OkHttpClient();
 
-            var replyButtonMessage = new ReplyButtonMessage();
-            var msg = new ButtonMessage();
-            replyButtonMessage.setReplyToken(replyToken);
-
-            var appUrl = reserveResponse.getInfo().getPaymentUrl().getApp();
-
-            msg.setType("button");
-            msg.setStyle("primary");
-            msg.setColor("#0000ff");
+            var templateMessage = new TemplateMessage();
 
             var action = new Action();
 
-            action.setLabel("Pay");
+            var actions = new ArrayList<Action>();
+            actions.add(action);
+
+            action.setType("postback");
+            action.setLabel("LINE Pay");
             action.setUri(appUrl);
-            action.setType("Uri");
 
-            msg.setAction(action);
+            var template = new Template();
 
-            List<ButtonMessage> msgs = new ArrayList<>();
+            template.setType("buttons");
+            template.setText("Tap button to pay");
+            template.setActions(actions);
 
-            msgs.add(msg);
+            var message = new Message();
 
-            replyButtonMessage.setButtonMessages(msgs);
+            message.setType("template");
+            message.setAltText("Paid by LINE Pay");
+            message.setTemplate(template);
+
+            templateMessage.setReplyToken(replyToken);
 
             Gson gson = new Gson();
-            var json = gson.toJson(replyButtonMessage);
+            var json = gson.toJson(templateMessage);
 
             logger.info("Reply ButtonMessage:" + json);
 
