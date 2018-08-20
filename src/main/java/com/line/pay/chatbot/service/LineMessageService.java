@@ -129,6 +129,7 @@ public class LineMessageService {
 
             Response response = client.newCall(request).execute();
             logger.info("Response HTTP Status:" + response.code());
+            logger.info("Response body:" + response.body().string());
 
             response.close();
 
