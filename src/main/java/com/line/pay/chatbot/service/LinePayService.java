@@ -1,6 +1,7 @@
 package com.line.pay.chatbot.service;
 
 import com.google.gson.Gson;
+import com.line.pay.chatbot.payment.ConfirmRequest;
 import com.line.pay.chatbot.payment.ReserveRequest;
 import com.line.pay.chatbot.payment.ReserveResponse;
 import okhttp3.*;
@@ -53,8 +54,14 @@ public class LinePayService {
 
         var client = new OkHttpClient();
 
-        String json = "{}";
+        var confirmRequest = new ConfirmRequest();
 
+        confirmRequest.setAmount(10);
+        confirmRequest.setCurrency("TWD");
+
+        Gson gson = new Gson();
+        var json = gson.toJson(confirmRequest);
+        
         RequestBody body = RequestBody.create(JSON, json);
 
         Request request = new Request.Builder()
