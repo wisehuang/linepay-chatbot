@@ -3,6 +3,7 @@ package com.line.pay.chatbot.controller;
 import com.google.common.io.ByteStreams;
 import com.line.pay.chatbot.service.DialogFlowService;
 import com.line.pay.chatbot.service.LineMessageService;
+import com.line.pay.chatbot.service.LinePayService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.ServletContextAware;
 
 import javax.servlet.ServletContext;
@@ -25,6 +27,9 @@ public class CallbackController implements ServletContextAware {
 
     @Autowired
     private LineMessageService lineMessageService;
+
+    @Autowired
+    private LinePayService linePayService;
 
     @RequestMapping(value="/callback", method=RequestMethod.POST)
     public ResponseEntity handleCallback(HttpServletRequest request, HttpServletResponse response) {
@@ -45,6 +50,19 @@ public class CallbackController implements ServletContextAware {
         }
 
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @RequestMapping(value="/confirm", method=RequestMethod.GET)
+    public ResponseEntity handleConfirm(HttpServletRequest request, HttpServletResponse response, @RequestParam("orderId") String orderId) {
+
+        try {
+            linePayService.invokeConfirm(orderId);
+
+            return new ResponseEntity("DONE", HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error(e);
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 
