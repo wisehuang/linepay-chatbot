@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
 @Service
 public class LineMessageService {
@@ -85,11 +86,15 @@ public class LineMessageService {
             msg.setText("hello back");
             msg.setType("text");
 
-            replyMsg.setMessage(msg);
+            List<Message> msgs = new ArrayList<>();
+
+            msgs.add(msg);
+
+            replyMsg.setMessage(msgs);
 
             Gson gson = new Gson();
             var json = gson.toJson(replyMsg);
-            
+
             logger.info("Reply Message:" + json);
 
             RequestBody body = RequestBody.create(JSON, json);
