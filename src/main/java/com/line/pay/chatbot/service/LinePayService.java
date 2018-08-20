@@ -50,11 +50,16 @@ public class LinePayService {
         var url = payApiUrl + "/" + orderId + "/confirm";
 
         logger.info("confirm API:" + url);
-        
+
         var client = new OkHttpClient();
+
+        String json = "{}";
+
+        RequestBody body = RequestBody.create(JSON, json);
 
         Request request = new Request.Builder()
                 .url(url)
+                .post(body)
                 .build();
         client.newCall(request).execute();
 
