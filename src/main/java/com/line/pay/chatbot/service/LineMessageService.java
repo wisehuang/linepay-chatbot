@@ -89,6 +89,8 @@ public class LineMessageService {
 
             Gson gson = new Gson();
             var json = gson.toJson(replyMsg);
+            
+            logger.info("Reply Message:" + json);
 
             RequestBody body = RequestBody.create(JSON, json);
             var token = "Bearer " + accessToken;
