@@ -97,8 +97,8 @@ public class LineMessageService {
             replyMsg.setReplyToken(replyToken);
 
             var appUrl = reserveResponse.getInfo().getPaymentUrl().getApp();
-            msg.setText("hello back");
-            msg.setType(appUrl);
+            msg.setText(appUrl);
+            msg.setType("text");
 
             List<Message> msgs = new ArrayList<>();
 
