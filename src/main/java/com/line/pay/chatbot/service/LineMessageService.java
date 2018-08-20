@@ -60,7 +60,7 @@ public class LineMessageService {
             for (var event : webhookEvent.getEvents()) {
                 logger.info("event type:" + event.getType());
 
-
+                replyMessage(event);
             }
         } catch (Exception e) {
             logger.error(e);
