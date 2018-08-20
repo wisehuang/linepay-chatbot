@@ -1,7 +1,11 @@
 package com.line.pay.chatbot.service;
 
 import com.google.gson.Gson;
+import com.line.pay.chatbot.events.Event;
+import com.line.pay.chatbot.events.Message;
+import com.line.pay.chatbot.events.ReplyMessage;
 import com.line.pay.chatbot.events.WebhookEvent;
+import okhttp3.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +34,17 @@ public class LineMessageService {
     @Value("${line.channel.secret}")
     private String channelSecret;
 
+    @Value("${line.access.token}")
+    private String accessToken;
+
+    @Value("${line.api.url}")
+    private String apiUrl;
+
+    @Value("${line.api.message.reply.url}")
+    private String replyUrl;
+
+    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
     public String getChannelSecret() {
         return this.channelSecret;
     }
@@ -45,27 +60,54 @@ public class LineMessageService {
             for (var event : webhookEvent.getEvents()) {
                 logger.info("event type:" + event.getType());
 
-                if ("message".equals(event.getType())) {
 
-                    var msg = event.getMessage().getText();
-                    var replyToken = event.getReplyToken();
-
-                    logger.info("event content:" + msg);
-                    logger.info("reply token:" + replyToken);
-
-                    var textList = new ArrayList<String>();
-                    textList.add(event.getMessage().getText());
-
-                    //dialogFlowService.detectIntentTexts("linepaydev", textList, event.getReplyToken(), "en-US");
-                }
             }
         } catch (Exception e) {
             logger.error(e);
         }
     }
 
-    public void replyMessage(String msg) {
+    public void replyMessage(Event event) throws Exception{
+        if ("message".equals(event.getType())) {
 
+            var msgString = event.getMessage().getText();
+            var replyToken = event.getReplyToken();
+
+            logger.info("event content:" + msgString);
+            logger.info("reply token:" + replyToken);
+
+            var url = apiUrl + replyUrl;
+            var client = new OkHttpClient();
+
+            var replyMsg = new ReplyMessage();
+            var msg = new Message();
+            replyMsg.setReplyToken(replyToken);
+            msg.setText("hello back");
+            msg.setType("text");
+
+            replyMsg.setMessage(msg);
+
+            Gson gson = new Gson();
+            var json = gson.toJson(replyMsg);
+
+            RequestBody body = RequestBody.create(JSON, json);
+            var token = "Bearer " + accessToken;
+
+            Request request = new Request.Builder()
+                    .addHeader("Authorization", token)
+                    .url(url)
+                    .post(body)
+                    .build();
+
+            client.newCall(request).execute();
+
+//                    var textList = new ArrayList<String>();
+//                    textList.add(event.getMessage().getText());
+
+            logger.info("event type:" + event.getType());
+
+            //dialogFlowService.detectIntentTexts("linepaydev", textList, event.getReplyToken(), "en-US");
+        }
     }
 
     public boolean isSignatureValid(String signature, byte[] body) {
