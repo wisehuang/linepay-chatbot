@@ -11,9 +11,9 @@ public class ReplyMessage {
     @SerializedName("replyToken")
     @Expose
     private String replyToken;
-    @SerializedName("message")
+    @SerializedName("messages")
     @Expose
-    private List<Message> message;
+    private List<Message> messages;
 
     public String getReplyToken() {
         return replyToken;
@@ -23,12 +23,12 @@ public class ReplyMessage {
         this.replyToken = replyToken;
     }
 
-    public List<Message> getMessage() {
-        return message;
+    public List<Message> getMessages() {
+        return messages;
     }
 
-    public void setMessage(List<Message> message) {
-        this.message = message;
+    public void setMessage(List<Message> messages) {
+        this.messages = messages;
     }
 
 }
