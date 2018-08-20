@@ -49,7 +49,7 @@ public class LinePayService {
 
     public void invokeConfirm(long transactionId) throws Exception{
 
-        var url = payApiUrl + "/" + transactionId + "/confirm";
+        var url = payApiUrl + "/v2/payments/" + transactionId + "/confirm";
 
         logger.info("confirm API:" + url);
 
