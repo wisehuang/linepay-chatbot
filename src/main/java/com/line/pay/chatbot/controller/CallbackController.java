@@ -1,10 +1,6 @@
 package com.line.pay.chatbot.controller;
 
 import com.google.common.io.ByteStreams;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
-import com.line.pay.chatbot.events.WebhookEvent;
 import com.line.pay.chatbot.service.DialogFlowService;
 import com.line.pay.chatbot.service.LineMessageService;
 import org.apache.logging.log4j.LogManager;
@@ -20,7 +16,6 @@ import org.springframework.web.context.ServletContextAware;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 @Controller
 public class CallbackController implements ServletContextAware {
@@ -28,8 +23,6 @@ public class CallbackController implements ServletContextAware {
 
     private static final String X_LINE_SIGNATURE = "X-Line-Signature";
 
-    @Autowired
-    private DialogFlowService dialogFlowService;
     @Autowired
     private LineMessageService lineMessageService;
 
@@ -43,9 +36,9 @@ public class CallbackController implements ServletContextAware {
 
             lineMessageService.handleWebhookEvent(bodyStr);
 
-//            if (!isSignatureValid(signature, body)) {
-//                return new ResponseEntity(HttpStatus.BAD_REQUEST);
-//            }
+            if (!lineMessageService.isSignatureValid(signature, body)) {
+                return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            }
 
         } catch (Exception e) {
             logger.error(e);
