@@ -47,7 +47,10 @@ public class LinePayService {
 
     public void invokeConfirm(String orderId) throws Exception{
 
-        var url = payApiUrl + "/" + orderId + "confirm";
+        var url = payApiUrl + "/" + orderId + "/confirm";
+
+        logger.info("confirm API:" + url);
+        
         var client = new OkHttpClient();
 
         Request request = new Request.Builder()
