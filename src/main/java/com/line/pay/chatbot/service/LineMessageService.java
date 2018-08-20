@@ -113,7 +113,11 @@ public class LineMessageService {
             message.setAltText("Paid by LINE Pay");
             message.setTemplate(template);
 
+            var messages = new ArrayList<Message>();
+            messages.add(message);
+
             templateMessage.setReplyToken(replyToken);
+            templateMessage.setMessages(messages);
 
             Gson gson = new Gson();
             var json = gson.toJson(templateMessage);
