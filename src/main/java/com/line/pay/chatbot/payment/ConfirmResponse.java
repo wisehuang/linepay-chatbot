@@ -4,7 +4,9 @@ package com.line.pay.chatbot.payment;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class ReserveResponse {
+import java.util.List;
+
+public class ConfirmResponse {
 
     @SerializedName("returnCode")
     @Expose
@@ -42,22 +44,22 @@ public class ReserveResponse {
 
     public class Info {
 
-        @SerializedName("paymentUrl")
+        @SerializedName("orderId")
         @Expose
-        private PaymentUrl paymentUrl;
+        private String orderId;
         @SerializedName("transactionId")
         @Expose
         private long transactionId;
-        @SerializedName("paymentAccessToken")
+        @SerializedName("payInfo")
         @Expose
-        private String paymentAccessToken;
+        private List<PayInfo> payInfo = null;
 
-        public PaymentUrl getPaymentUrl() {
-            return paymentUrl;
+        public String getOrderId() {
+            return orderId;
         }
 
-        public void setPaymentUrl(PaymentUrl paymentUrl) {
-            this.paymentUrl = paymentUrl;
+        public void setOrderId(String orderId) {
+            this.orderId = orderId;
         }
 
         public long getTransactionId() {
@@ -68,41 +70,40 @@ public class ReserveResponse {
             this.transactionId = transactionId;
         }
 
-        public String getPaymentAccessToken() {
-            return paymentAccessToken;
+        public List<PayInfo> getPayInfo() {
+            return payInfo;
         }
 
-        public void setPaymentAccessToken(String paymentAccessToken) {
-            this.paymentAccessToken = paymentAccessToken;
-        }
-
-    }
-
-    public class PaymentUrl {
-
-        @SerializedName("web")
-        @Expose
-        private String web;
-        @SerializedName("app")
-        @Expose
-        private String app;
-
-        public String getWeb() {
-            return web;
-        }
-
-        public void setWeb(String web) {
-            this.web = web;
-        }
-
-        public String getApp() {
-            return app;
-        }
-
-        public void setApp(String app) {
-            this.app = app;
+        public void setPayInfo(List<PayInfo> payInfo) {
+            this.payInfo = payInfo;
         }
 
     }
 
+    public class PayInfo {
+
+        @SerializedName("method")
+        @Expose
+        private String method;
+        @SerializedName("amount")
+        @Expose
+        private long amount;
+
+        public String getMethod() {
+            return method;
+        }
+
+        public void setMethod(String method) {
+            this.method = method;
+        }
+
+        public long getAmount() {
+            return amount;
+        }
+
+        public void setAmount(long amount) {
+            this.amount = amount;
+        }
+
+    }
 }

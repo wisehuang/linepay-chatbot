@@ -2,6 +2,7 @@ package com.line.pay.chatbot.service;
 
 import com.google.gson.Gson;
 import com.line.pay.chatbot.payment.ConfirmRequest;
+import com.line.pay.chatbot.payment.ConfirmResponse;
 import com.line.pay.chatbot.payment.ReserveRequest;
 import com.line.pay.chatbot.payment.ReserveResponse;
 import okhttp3.*;
@@ -59,15 +60,25 @@ public class LinePayService {
         confirmRequest.setAmount(10);
         confirmRequest.setCurrency("TWD");
 
-        Gson gson = new Gson();
+        var gson = new Gson();
         var json = gson.toJson(confirmRequest);
 
         logger.info("confirm request:" + json);
 
-        RequestBody body = RequestBody.create(JSON, json);
+        var body = RequestBody.create(JSON, json);
 
         Request request = buildLinePayRequest(body, url);
-        client.newCall(request).execute();
+        Response response = client.newCall(request).execute();
+
+        logger.info("Response HTTP Status:" + response.code());
+
+        var responseBody = response.body().string();
+
+        logger.info("Response Body:" + responseBody);
+
+        response.close();
+
+        //var confirmResponse = gson.fromJson(responseBody, ConfirmResponse.class);
     }
 
     public ReserveRequest getReserveRequest(long amount) {
@@ -87,7 +98,6 @@ public class LinePayService {
         reserveRequest.setProductName("TEST");
         return reserveRequest;
     }
-
     public ReserveResponse getReserveResponse(Gson gson, String json) {
         RequestBody body = RequestBody.create(JSON, json);
 
