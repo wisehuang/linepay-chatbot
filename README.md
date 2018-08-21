@@ -1,6 +1,6 @@
 # LINE Pay chatbot
 
-![LINE Pay](https://i.imgur.com/E1mrEK1l.gif)
+<img src="https://i.imgur.com/E1mrEK1.gif" height="600" />
 
 ## Description
 
