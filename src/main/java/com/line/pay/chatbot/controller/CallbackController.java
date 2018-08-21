@@ -2,13 +2,14 @@ package com.line.pay.chatbot.controller;
 
 import com.google.common.io.ByteStreams;
 import com.google.gson.Gson;
-import com.line.pay.chatbot.events.*;
+import com.line.pay.chatbot.events.Event;
 import com.line.pay.chatbot.payment.ReserveResponse;
 import com.line.pay.chatbot.service.LineMessageService;
 import com.line.pay.chatbot.service.LinePayService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -20,7 +21,6 @@ import org.springframework.web.context.ServletContextAware;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 
 @Controller
 public class CallbackController implements ServletContextAware {
@@ -33,6 +33,9 @@ public class CallbackController implements ServletContextAware {
 
     @Autowired
     private LinePayService linePayService;
+
+    @Value("${line.id}")
+    private String lineId;
 
     @RequestMapping(value = "/callback", method = RequestMethod.POST)
     public ResponseEntity handleCallback(HttpServletRequest request, HttpServletResponse response) {
@@ -106,7 +109,7 @@ public class CallbackController implements ServletContextAware {
         } catch (Exception e) {
             logger.error(e);
         }
-        return "redirect:line://ti/p/@wej7798j";
+        return "redirect:line://ti/p/" + lineId;
     }
 
     @RequestMapping(value = "/cancel", method = RequestMethod.GET)
@@ -118,7 +121,7 @@ public class CallbackController implements ServletContextAware {
         } catch (Exception e) {
             logger.error(e);
         }
-        return "redirect:line://ti/p/@wej7798j";
+        return "redirect:line://ti/p/" + lineId;
     }
 
     @Override
