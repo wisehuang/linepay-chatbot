@@ -82,12 +82,12 @@ public class LineMessageService {
         response.close();
     }
 
-    public void pushMessage(String userId) throws Exception {
+    public void pushMessage(String userId, String packageId, String stickerId) throws Exception {
         var pushMsg = new PushMessage();
         var stickerMsg = new StickerMessage();
 
-        stickerMsg.setPackageId("1");
-        stickerMsg.setStickerId("1");
+        stickerMsg.setPackageId(packageId);
+        stickerMsg.setStickerId(stickerId);
         stickerMsg.setType("sticker");
 
         var messages = new ArrayList<StickerMessage>();

@@ -32,6 +32,9 @@ public class LinePayService {
     @Value("${line.pay.confirm.url}")
     private String confirmUrl;
 
+    @Value("${line.pay.cancel.url}")
+    private String cancelUrl;
+
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     public ReserveResponse invokeReserve(long amount, String userId) {
@@ -90,6 +93,7 @@ public class LinePayService {
         reserveRequest.setCapture("true");
         reserveRequest.setCheckConfirmUrlBrowser("false");
         reserveRequest.setConfirmUrl(confirmUrl + "?amount=" + amount + "&userId=" + userId);
+        reserveRequest.setCancelUrl(cancelUrl + "?userId=" + userId);
         reserveRequest.setConfirmUrlType("CLIENT");
         reserveRequest.setCurrency("TWD");
         reserveRequest.setOrderId(orderId);

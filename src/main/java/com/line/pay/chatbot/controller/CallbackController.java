@@ -34,7 +34,7 @@ public class CallbackController implements ServletContextAware {
     @Autowired
     private LinePayService linePayService;
 
-    @RequestMapping(value="/callback", method=RequestMethod.POST)
+    @RequestMapping(value = "/callback", method = RequestMethod.POST)
     public ResponseEntity handleCallback(HttpServletRequest request, HttpServletResponse response) {
         try {
             var signature = request.getHeader(X_LINE_SIGNATURE);
@@ -95,24 +95,31 @@ public class CallbackController implements ServletContextAware {
         lineMessageService.replyMessage(json);
     }
 
-    @RequestMapping(value="/confirm", method=RequestMethod.GET)
-    public String handleConfirm(HttpServletRequest request, HttpServletResponse response,
-                                        @RequestParam("transactionId") long transactionId,
-                                        @RequestParam("amount") int amount, @RequestParam("userId") String userId) {
+    @RequestMapping(value = "/confirm", method = RequestMethod.GET)
+    public String handleConfirm(@RequestParam("transactionId") long transactionId,
+                                @RequestParam("amount") int amount, @RequestParam("userId") String userId) {
 
         try {
             linePayService.invokeConfirm(transactionId, amount);
 
-            lineMessageService.pushMessage(userId);
-
-            return "redirect:line://ti/p/@wej7798j";
+            lineMessageService.pushMessage(userId, "2", "35");
         } catch (Exception e) {
             logger.error(e);
-            return "redirect:line://ti/p/@wej7798j";
         }
+        return "redirect:line://ti/p/@wej7798j";
     }
 
+    @RequestMapping(value = "/cancel", method = RequestMethod.GET)
+    public String handleCancel(@RequestParam("userId") String userId) {
 
+        try {
+
+            lineMessageService.pushMessage(userId, "2", "32");
+        } catch (Exception e) {
+            logger.error(e);
+        }
+        return "redirect:line://ti/p/@wej7798j";
+    }
 
     @Override
     public void setServletContext(ServletContext servletContext) {
