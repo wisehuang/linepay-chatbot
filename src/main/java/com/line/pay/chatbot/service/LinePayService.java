@@ -34,8 +34,8 @@ public class LinePayService {
 
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-    public ReserveResponse invokeReserve(long amount) {
-        ReserveRequest reserveRequest = getReserveRequest(amount);
+    public ReserveResponse invokeReserve(long amount, String userId) {
+        ReserveRequest reserveRequest = getReserveRequest(amount, userId);
 
         var gson = new Gson();
 
@@ -81,7 +81,7 @@ public class LinePayService {
         //var confirmResponse = gson.fromJson(responseBody, ConfirmResponse.class);
     }
 
-    public ReserveRequest getReserveRequest(long amount) {
+    public ReserveRequest getReserveRequest(long amount, String userId) {
         var reserveRequest = new ReserveRequest();
 
         var orderId = UUID.randomUUID().toString();
@@ -89,7 +89,7 @@ public class LinePayService {
         reserveRequest.setAmount(amount);
         reserveRequest.setCapture("true");
         reserveRequest.setCheckConfirmUrlBrowser("false");
-        reserveRequest.setConfirmUrl(confirmUrl + "?amount=" + amount);
+        reserveRequest.setConfirmUrl(confirmUrl + "?amount=" + amount + "&userId=" + userId);
         reserveRequest.setConfirmUrlType("CLIENT");
         reserveRequest.setCurrency("TWD");
         reserveRequest.setOrderId(orderId);
@@ -98,6 +98,7 @@ public class LinePayService {
         reserveRequest.setProductName("TEST");
         return reserveRequest;
     }
+
     public ReserveResponse getReserveResponse(Gson gson, String json) {
         RequestBody body = RequestBody.create(JSON, json);
 

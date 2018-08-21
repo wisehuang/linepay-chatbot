@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -36,6 +37,9 @@ public class LineMessageService {
     @Value("${line.api.message.reply.url}")
     private String replyUrl;
 
+    @Value("${line.api.message.push.url}")
+    private String pushUrl;
+
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     public String getChannelSecret() {
@@ -50,6 +54,16 @@ public class LineMessageService {
     public void replyMessage(String json) throws Exception {
 
         var url = apiUrl + replyUrl;
+        sendMessage(json, url);
+
+//                    var textList = new ArrayList<String>();
+//                    textList.add(event.getMessage().getText());
+
+        //dialogFlowService.detectIntentTexts("linepaydev", textList, event.getReplyToken(), "en-US");
+
+    }
+
+    public void sendMessage(String json, String url) throws IOException {
         var client = new OkHttpClient();
 
         var body = RequestBody.create(JSON, json);
@@ -66,12 +80,28 @@ public class LineMessageService {
         logger.info("Response body:" + response.body().string());
 
         response.close();
+    }
 
-//                    var textList = new ArrayList<String>();
-//                    textList.add(event.getMessage().getText());
+    public void pushMessage(String userId) throws Exception {
+        var pushMsg = new PushMessage();
+        var stickerMsg = new StickerMessage();
 
-        //dialogFlowService.detectIntentTexts("linepaydev", textList, event.getReplyToken(), "en-US");
+        stickerMsg.setPackageId("1");
+        stickerMsg.setStickerId("1");
+        stickerMsg.setType("sticker");
 
+        var messages = new ArrayList<StickerMessage>();
+        messages.add(stickerMsg);
+
+        pushMsg.setMessages(messages);
+        pushMsg.setTo(userId);
+
+        var gson = new Gson();
+        var json = gson.toJson(pushMsg);
+
+        var url = apiUrl + pushUrl;
+
+        sendMessage(json, url);
     }
 
     public TemplateMessage getTemplateMessage(String replyToken, String appUrl) {
