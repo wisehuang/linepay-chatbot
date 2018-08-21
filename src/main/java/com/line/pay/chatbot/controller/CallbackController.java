@@ -94,17 +94,17 @@ public class CallbackController implements ServletContextAware {
     }
 
     @RequestMapping(value="/confirm", method=RequestMethod.GET)
-    public ResponseEntity handleConfirm(HttpServletRequest request, HttpServletResponse response,
+    public String handleConfirm(HttpServletRequest request, HttpServletResponse response,
                                         @RequestParam("transactionId") long transactionId,
                                         @RequestParam("amount") int amount) {
 
         try {
             linePayService.invokeConfirm(transactionId, amount);
 
-            return new ResponseEntity("DONE", HttpStatus.OK);
+            return "redirect:line://ti/p/@wej7798j";
         } catch (Exception e) {
             logger.error(e);
-            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            return "redirect:line://ti/p/@wej7798j";
         }
     }
 
