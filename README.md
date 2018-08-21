@@ -1,5 +1,7 @@
 # LINE Pay chatbot
 
+![LINE Pay](https://i.imgur.com/E1mrEK1l.gif)
+
 ## Description
 
 This is a simple Spring Boot application as a LINE chatbot with LINE Pay
