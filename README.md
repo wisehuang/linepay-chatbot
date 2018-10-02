@@ -10,6 +10,12 @@ This is a simple Spring Boot application as a LINE chatbot with LINE Pay
 1. Install JDK 10.0.2
 2. Install Gradle 4.9
 3. Edit application.properties under /src/main/resources
+```
+# application.properties
+line.bot.channelSecret = XXXXX
+line.bot.channelToken = XXXXX
+line.bot.handler.path = /callback
+```
 4. Run
 ```
 > gradle build
